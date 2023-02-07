@@ -4,7 +4,7 @@ import App from './App.vue'
 import router from './router'
 import { register } from '@/utils/register'
 import { urlParse, isWeChat } from './utils'
-import { getWxAuthorize } from '@/api/base'
+import { getWxAuthorize, getToken } from '@/api/base'
 
 // 引入全局样式
 import '@/assets/scss/index.scss'
@@ -27,10 +27,15 @@ const initApp = () => {
 }
 
 if (isWeChat(navigator.userAgent)) {
-  initApp()
   console.log('searchObject', searchObject)
   if (searchObject.code) {
-    //
+    getToken().then(res => {
+      console.log('---', res)
+      initApp()
+      router.push({
+        path: '/'
+      })
+    })
   } else {
     getWxAuthorize()
       .then(res => {

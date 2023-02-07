@@ -1,6 +1,6 @@
 <script>
 import { defineComponent, reactive, ref, h, resolveComponent, computed, toRefs } from 'vue'
-import { Tabs, Tab, Search, Popup, Form, Button, Cell } from 'vant'
+import { Tabs, Tab, Search, Popup, Form, Button, Tag } from 'vant'
 import { useSearchField } from '@/use/useSearchField'
 import ContentList from '@/components/content-list'
 
@@ -51,12 +51,12 @@ export default defineComponent({
           refreshContext.refreshing = false
         }
 
-        for (let i = 0; i < 10; i++) {
+        for (let i = 0; i < 1; i++) {
           list.value.push(list.value.length + 1)
         }
         refreshContext.loading = false
 
-        if (list.value.length >= 40) {
+        if (list.value.length >= 1) {
           refreshContext.finished = true
         }
       }, 1000)
@@ -82,7 +82,22 @@ export default defineComponent({
       return <div class="render-view">
         {
           this.list.length && this.list.map(item => {
-            return <Cell key={item} title={item}></Cell>
+            return <div class="overview">
+              <div class="wrapper">
+                <div class="title">
+                  <i>No：</i>
+                  <span>Action：</span>
+                </div>
+                <div class="extra">
+                  <span>Mhr：<Tag mark type="primary">1</Tag></span>
+                  <span>Trade：<Tag mark type="primary">AE</Tag></span>
+                  <span>Sws：<Tag mark type="primary">有</Tag></span>
+                </div>
+                <div class="desc">
+                  <p>支持NRC附属补充工作单勾选后，在NRC提交后自动跳转至补充工单生成页面，并将各个步骤全部复制至相应位置；</p>
+                </div>
+              </div>
+            </div>
           })
         }
       </div>
@@ -91,7 +106,22 @@ export default defineComponent({
       return <div class="render-view">
         {
           this.list.length && this.list.map(item => {
-            return <Cell key={item} title={item}></Cell>
+            return <div class="overview">
+              <div class="wrapper">
+                <div class="title">
+                  <i>No：</i>
+                  <span>Action：</span>
+                </div>
+                <div class="extra">
+                  <span>Mhr：<Tag mark type="primary">1</Tag></span>
+                  <span>Trade：<Tag mark type="primary">AE</Tag></span>
+                  <span>Sws：<Tag mark type="primary">有</Tag></span>
+                </div>
+                <div class="desc">
+                  <p>支持NRC附属补充工作单勾选后，在NRC提交后自动跳转至补充工单生成页面，并将各个步骤全部复制至相应位置；</p>
+                </div>
+              </div>
+            </div>
           })
         }
       </div>
@@ -181,7 +211,47 @@ export default defineComponent({
 }
 .render-view {
   margin: 10px;
-  background: red;
+  .overview {
+    min-height: 85px;
+    border: 1px solid #eee;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    .wrapper {
+      padding: 10px;
+      .title {
+        display: flex;
+        justify-content: space-between;
+        height: 20px;
+        margin-bottom: 5px;
+        color: $color-text;
+        i {
+          font-size: $font-size-medium-x;
+          font-style: normal;
+        }
+        span {
+          font-size: $font-size-medium;
+        }
+      }
+      .extra {
+        display: flex;
+        justify-content: space-between;
+        font-size: $font-size-medium;
+        margin-bottom: 5px;
+      }
+      .desc {
+        p {
+          line-height: 16px;
+          font-size: $font-size-small;
+          color: $color-text-d;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          display: -webkit-box; //作为弹性伸缩盒子模型显示。
+          -webkit-box-orient: vertical; //设置伸缩盒子的子元素排列方式--从上到下垂直排列
+          -webkit-line-clamp: 3; //显示的行
+        }
+      }
+    }
+  }
 }
 .serach-form-bottom {
   display: flex;
