@@ -1,6 +1,6 @@
 <script>
 import { defineComponent, onMounted, reactive, ref, toRefs, watch } from 'vue'
-import { Form, Field, Divider, Checkbox, Switch, Radio, RadioGroup, Uploader, Button, Icon, showSuccessToast } from 'vant'
+import { Divider, Checkbox, Switch, Radio, RadioGroup, Uploader, Icon, showSuccessToast } from 'vant'
 import Compressor from 'compressorjs'
 import { useRouter } from 'vue-router'
 import PopupPicker from '@/components/popup-picker'
@@ -10,8 +10,6 @@ import SelectTag from '@/components/select-tag'
 import QrCode from '@/components/qr-code'
 import { debounce, isObject } from '@/utils'
 import { getJobInfoById, getSelectList, getSelectComponentList, submitWorkCard } from '@/api/workCard'
-
-// getSelectList, getSelectComponentList
 
 export default defineComponent({
   name: 'work-card',

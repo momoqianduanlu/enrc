@@ -162,3 +162,10 @@ export function blobToBase64 (blob) {
     }
   })
 }
+
+/**
+ * 首字母转大写
+ */
+export function firstToUppercase (str) {
+  return str.toLowerCase().replace(/( |^)[a-z]/g, (L) => L.toUpperCase())
+}

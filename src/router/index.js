@@ -3,6 +3,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 const Home = () => import('../views/home.vue')
 const WorkCard = () => import('../views/work-card.vue')
 const NrcView = () => import('../views/nrc-view.vue')
+const NrcCheck = () => import('../views/nrc-check.vue')
 const Success = () => import('../views/success.vue')
 
 const routes = [
@@ -32,6 +33,15 @@ const routes = [
       arrow: true
     },
     component: NrcView
+  },
+  {
+    path: '/nrc-check',
+    name: 'nrc-check',
+    meta: {
+      name: 'NRC查询',
+      arrow: true
+    },
+    component: NrcCheck
   },
   {
     path: '/success',

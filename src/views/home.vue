@@ -25,18 +25,18 @@ export default defineComponent({
       },
       {
         name: 'NRC查询',
-        url: '',
+        url: '/nrc-check',
         icon: 'photo-o'
       },
       {
         name: 'NRC模板',
-        url: '',
+        url: '/nrc-view',
         icon: 'photo-o'
       }
     ]
-    const onRouteTo = () => {
+    const onRouteTo = (data) => {
       router.push({
-        path: '/work-card'
+        path: data.url
       })
     }
     return {
@@ -70,7 +70,9 @@ export default defineComponent({
           {
             gridList.map((grid) => {
               return (
-                <GridItem icon={grid.icon} text={grid.name} onClick={onRouteTo}></GridItem>
+                <GridItem icon={grid.icon} text={grid.name} onClick={() => {
+                  onRouteTo(grid)
+                }}></GridItem>
               )
             })
           }

@@ -1,6 +1,6 @@
 <script>
 import { defineComponent, ref, toRefs } from 'vue'
-import { Field, Tag, Button, Popover, showToast, Dialog } from 'vant'
+import { Tag, Popover, showToast, Dialog } from 'vant'
 
 /**
  * 输入框 + 下拉

@@ -2,7 +2,7 @@ export const useSearchField = () => {
   return {
     renderHistory: [
       {
-        model: 'van-field',
+        model: 'Field',
         props: {
           label: 'Project Id',
           placeholder: '请输入project id',
@@ -10,7 +10,7 @@ export const useSearchField = () => {
         }
       },
       {
-        model: 'van-field',
+        model: 'Field',
         props: {
           label: 'Orininator',
           placeholder: '请输入Orininator',
@@ -18,7 +18,7 @@ export const useSearchField = () => {
         }
       },
       {
-        model: 'van-field',
+        model: 'Field',
         props: {
           label: 'Trade',
           placeholder: '请输入Trade',
@@ -26,7 +26,7 @@ export const useSearchField = () => {
         }
       },
       {
-        model: 'van-field',
+        model: 'Field',
         props: {
           type: 'textarea',
           label: 'Descriptor',
@@ -39,7 +39,7 @@ export const useSearchField = () => {
     ],
     renderNormal: [
       {
-        model: 'van-field',
+        model: 'Field',
         props: {
           label: 'Trade',
           placeholder: '请输入Trade',
@@ -47,7 +47,7 @@ export const useSearchField = () => {
         }
       },
       {
-        model: 'van-field',
+        model: 'Field',
         props: {
           label: 'ATA',
           placeholder: '请输入ATA',
@@ -55,7 +55,7 @@ export const useSearchField = () => {
         }
       },
       {
-        model: 'van-field',
+        model: 'Field',
         props: {
           label: 'Defect Type',
           placeholder: '请输入Defect Type',
@@ -63,7 +63,7 @@ export const useSearchField = () => {
         }
       },
       {
-        model: 'van-field',
+        model: 'Field',
         props: {
           type: 'textarea',
           label: 'Descriptor',

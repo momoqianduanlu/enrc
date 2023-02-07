@@ -1,7 +1,8 @@
 <script>
 import { defineComponent, reactive, ref, h, resolveComponent, computed, toRefs } from 'vue'
-import { Tabs, Tab, Search, Popup, Form, Checkbox, Button, Tag } from 'vant'
+import { Tabs, Tab, Search, Popup, Checkbox, Tag } from 'vant'
 import { useSearchField } from '@/use/useSearchField'
+import { showDialog } from '@/components/base/base-dialog/index'
 import ContentList from '@/components/content-list'
 
 export default defineComponent({
@@ -40,12 +41,12 @@ export default defineComponent({
     }
     const onTagHnadle = () => {
       // 以api的方式调用组件
+      showDialog().show({ showCancelButton: true }).then(res => {
+        console.log('///', res)
+      })
     }
     const onRefreshHandle = () => {
-      // setTimeout(() => {
-      //   showToast('刷新成功')
-      //   refreshContext.refreshing = false
-      // }, 1000)
+      //
     }
     const onLoadedHandle = () => {
       // setTimeout 仅做示例，真实场景中一般为 ajax 请求
@@ -65,6 +66,13 @@ export default defineComponent({
         }
       }, 1000)
     }
+    // tab切换重置加载状态
+    const onBeforeChange = (index) => {
+      refreshContext.finished = false
+      refreshContext.loading = false
+      refreshContext.refreshing = false
+      return true
+    }
     return {
       active,
       tabData,
@@ -79,11 +87,12 @@ export default defineComponent({
       onClickButton,
       onTagHnadle,
       onRefreshHandle,
-      onLoadedHandle
+      onLoadedHandle,
+      onBeforeChange
     }
   },
   render () {
-    const { onFocus, onClickButton, onTagHnadle, onRefreshHandle, onLoadedHandle } = this
+    const { onFocus, onClickButton, onTagHnadle, onRefreshHandle, onLoadedHandle, onBeforeChange } = this
     const renderHistory = () => {
       return <div class="render-view">
         {
@@ -183,7 +192,7 @@ export default defineComponent({
           action: () => <div onClick={onClickButton}>取消</div>
         }}
       </Search>
-      <Tabs v-model:active={this.active} sticky offset-top={46}>
+      <Tabs v-model:active={this.active} sticky offset-top={46} before-change={onBeforeChange}>
         {
           this.tabData.map(tab => {
             return (
