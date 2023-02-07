@@ -1,0 +1,78 @@
+export const useSearchField = () => {
+  return {
+    renderHistory: [
+      {
+        model: 'van-field',
+        props: {
+          label: 'Project Id',
+          placeholder: '请输入project id',
+          modelValue: ''
+        }
+      },
+      {
+        model: 'van-field',
+        props: {
+          label: 'Orininator',
+          placeholder: '请输入Orininator',
+          modelValue: ''
+        }
+      },
+      {
+        model: 'van-field',
+        props: {
+          label: 'Trade',
+          placeholder: '请输入Trade',
+          modelValue: ''
+        }
+      },
+      {
+        model: 'van-field',
+        props: {
+          type: 'textarea',
+          label: 'Descriptor',
+          autosize: true,
+          rows: 2,
+          placeholder: '请输入Descriptor',
+          modelValue: ''
+        }
+      }
+    ],
+    renderNormal: [
+      {
+        model: 'van-field',
+        props: {
+          label: 'Trade',
+          placeholder: '请输入Trade',
+          modelValue: ''
+        }
+      },
+      {
+        model: 'van-field',
+        props: {
+          label: 'ATA',
+          placeholder: '请输入ATA',
+          modelValue: ''
+        }
+      },
+      {
+        model: 'van-field',
+        props: {
+          label: 'Defect Type',
+          placeholder: '请输入Defect Type',
+          modelValue: ''
+        }
+      },
+      {
+        model: 'van-field',
+        props: {
+          type: 'textarea',
+          label: 'Descriptor',
+          autosize: true,
+          rows: 2,
+          placeholder: '请输入Descriptor',
+          modelValue: ''
+        }
+      }
+    ]
+  }
+}
