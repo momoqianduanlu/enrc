@@ -9,7 +9,7 @@ import TopTitle from '@/components/base/top-title'
 import SelectTag from '@/components/select-tag'
 import QrCode from '@/components/qr-code'
 import { debounce, isObject } from '@/utils'
-import { getJobInfoById, submitWorkCard } from '@/api/workCard'
+import { getJobInfoById, getSelectList, getSelectComponentList, submitWorkCard } from '@/api/workCard'
 
 // getSelectList, getSelectComponentList
 
@@ -183,7 +183,7 @@ export default defineComponent({
         Object.keys(params).forEach(key => {
           let val = params[key]
           // 文件数组
-          if (Array.isArray(val) && val.length) {
+          if (key === 'files' && Array.isArray(val) && val.length) {
             val = val.map(item => {
               return {
                 file: item.content
@@ -213,6 +213,7 @@ export default defineComponent({
         })
         return _params
       }
+      console.log(transformParams({ ...state }))
       // 保存提交
       submitWorkCard({
         type: 2,
@@ -226,43 +227,43 @@ export default defineComponent({
       })
     }
     onMounted(() => {
-      // const processSelectData = (list, key) => {
-      //   if (Array.isArray(list)) {
-      //     return list.map(item => {
-      //       return {
-      //         text: item[key].trim(),
-      //         value: item[key].trim()
-      //       }
-      //     })
-      //   }
-      //   return list
-      // }
-      // Promise.all([
-      //   getSelectList('area'),
-      //   getSelectList('trade'),
-      //   getSelectList('stage')
-      // ]).then((values) => {
-      //   if (values && values.length) {
-      //     const includeList = ['AreaCode', 'PrimeTrade', 'StageCode']
-      //     Object.keys(selectList).forEach((key, index) => {
-      //       selectList[key] = processSelectData(values[index], includeList[index])
-      //     })
-      //   }
-      // })
-      // Promise.all([
-      //   getSelectComponentList('ENRC_DEFECT_TYPE'),
-      //   getSelectComponentList('ENRC_RECOMMENDED_ACTION'),
-      //   getSelectComponentList('ENRC_PART'),
-      //   getSelectComponentList('ENRC_CAUSE')
-      // ]).then((values) => {
-      //   if (values && values.length) {
-      //     Object.keys(selectTagList).forEach((key, index) => {
-      //       selectTagList[key] = Array.from(values[index], item => {
-      //         return item.dictid
-      //       })
-      //     })
-      //   }
-      // })
+      const processSelectData = (list, key) => {
+        if (Array.isArray(list)) {
+          return list.map(item => {
+            return {
+              text: item[key].trim(),
+              value: item[key].trim()
+            }
+          })
+        }
+        return list
+      }
+      Promise.all([
+        getSelectList('area'),
+        getSelectList('trade'),
+        getSelectList('stage')
+      ]).then((values) => {
+        if (values && values.length) {
+          const includeList = ['AreaCode', 'PrimeTrade', 'StageCode']
+          Object.keys(selectList).forEach((key, index) => {
+            selectList[key] = processSelectData(values[index], includeList[index])
+          })
+        }
+      })
+      Promise.all([
+        getSelectComponentList('ENRC_DEFECT_TYPE'),
+        getSelectComponentList('ENRC_RECOMMENDED_ACTION'),
+        getSelectComponentList('ENRC_PART'),
+        getSelectComponentList('ENRC_CAUSE')
+      ]).then((values) => {
+        if (values && values.length) {
+          Object.keys(selectTagList).forEach((key, index) => {
+            selectTagList[key] = Array.from(values[index], item => {
+              return item.dictid
+            })
+          })
+        }
+      })
     })
     return {
       zoneList,

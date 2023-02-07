@@ -1,6 +1,6 @@
 <script>
 import { defineComponent, reactive, ref, h, resolveComponent, computed, toRefs } from 'vue'
-import { Tabs, Tab, Search, Popup, Form, Button, Tag } from 'vant'
+import { Tabs, Tab, Search, Popup, Form, Checkbox, Button, Tag } from 'vant'
 import { useSearchField } from '@/use/useSearchField'
 import ContentList from '@/components/content-list'
 
@@ -22,6 +22,7 @@ export default defineComponent({
     ])
     const searchQuery = ref('')
     const visible = ref(false)
+    const checked = ref(false)
     const list = ref([1, 2, 3, 4, 5, 6])
     const searchContext = reactive(useSearchField())
     const refreshContext = reactive({
@@ -36,6 +37,9 @@ export default defineComponent({
     }
     const onClickButton = () => {
       visible.value = false
+    }
+    const onTagHnadle = () => {
+      // 以api的方式调用组件
     }
     const onRefreshHandle = () => {
       // setTimeout(() => {
@@ -65,6 +69,7 @@ export default defineComponent({
       active,
       tabData,
       visible,
+      checked,
       searchQuery,
       searchContext,
       ...toRefs(refreshContext),
@@ -72,26 +77,30 @@ export default defineComponent({
       list,
       onFocus,
       onClickButton,
+      onTagHnadle,
       onRefreshHandle,
       onLoadedHandle
     }
   },
   render () {
-    const { onFocus, onClickButton, onRefreshHandle, onLoadedHandle } = this
+    const { onFocus, onClickButton, onTagHnadle, onRefreshHandle, onLoadedHandle } = this
     const renderHistory = () => {
       return <div class="render-view">
         {
           this.list.length && this.list.map(item => {
             return <div class="overview">
+              <div class="checked">
+                <Checkbox v-model={this.checked} />
+              </div>
               <div class="wrapper">
                 <div class="title">
                   <i>No：</i>
                   <span>Action：</span>
                 </div>
                 <div class="extra">
-                  <span>Mhr：<Tag mark type="primary">1</Tag></span>
-                  <span>Trade：<Tag mark type="primary">AE</Tag></span>
-                  <span>Sws：<Tag mark type="primary">有</Tag></span>
+                  <span>Mhr：<Tag plain type="primary">1</Tag></span>
+                  <span>Trade：<Tag plain type="primary">AE</Tag></span>
+                  <span>Sws：<Tag type="primary">有</Tag></span>
                 </div>
                 <div class="desc">
                   <p>支持NRC附属补充工作单勾选后，在NRC提交后自动跳转至补充工单生成页面，并将各个步骤全部复制至相应位置；</p>
@@ -107,15 +116,18 @@ export default defineComponent({
         {
           this.list.length && this.list.map(item => {
             return <div class="overview">
+              <div class="checked">
+                <Checkbox v-model={this.checked} />
+              </div>
               <div class="wrapper">
                 <div class="title">
                   <i>No：</i>
                   <span>Action：</span>
                 </div>
                 <div class="extra">
-                  <span>Mhr：<Tag mark type="primary">1</Tag></span>
-                  <span>Trade：<Tag mark type="primary">AE</Tag></span>
-                  <span>Sws：<Tag mark type="primary">有</Tag></span>
+                  <span>Mhr：<Tag plain type="primary">1</Tag></span>
+                  <span>Trade：<Tag plain type="primary">AE</Tag></span>
+                  <span>Sws：<Tag type="primary" onClick={onTagHnadle}>有</Tag></span>
                 </div>
                 <div class="desc">
                   <p>支持NRC附属补充工作单勾选后，在NRC提交后自动跳转至补充工单生成页面，并将各个步骤全部复制至相应位置；</p>
@@ -212,12 +224,19 @@ export default defineComponent({
 .render-view {
   margin: 10px;
   .overview {
-    min-height: 85px;
+    position: relative;
+    height: 90px;
     border: 1px solid #eee;
     border-radius: 5px;
     margin-bottom: 10px;
+    .checked {
+      position: absolute;
+      top: 38%;
+      left: 3px;
+    }
     .wrapper {
       padding: 10px;
+      margin-left: 20px;
       .title {
         display: flex;
         justify-content: space-between;
