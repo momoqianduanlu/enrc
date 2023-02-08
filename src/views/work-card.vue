@@ -157,7 +157,7 @@ export default defineComponent({
     const onDraft = () => {
       submitWorkCard({
         type: 1,
-        user: loadUserInfo(), // 鉴权后用户信息(企业微信返回的code)
+        user: loadUserInfo().userId, // 鉴权后用户信息(企业微信返回的code)
         ...transformParams({ ...state })
       }).then(res => {
         if (res && res.code === 200) {
@@ -170,7 +170,7 @@ export default defineComponent({
     const onSubmit = () => {
       submitWorkCard({
         type: 2,
-        user: loadUserInfo(), // 鉴权后用户信息(企业微信返回的code)
+        user: loadUserInfo().userId, // 鉴权后用户信息(企业微信返回的code)
         ...transformParams({ ...state })
       }).then(res => {
         if (res && res.code === 200) {
