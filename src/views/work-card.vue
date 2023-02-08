@@ -17,7 +17,7 @@ export default defineComponent({
   setup (props, ctx) {
     const state = reactive({
       id: null,
-      originalJobNo: 'AAE08',
+      originalJobNo: 'AGE003',
       projId: '',
       acRegn: '',
       area: '',
@@ -157,7 +157,7 @@ export default defineComponent({
     const onDraft = () => {
       submitWorkCard({
         type: 1,
-        user: loadUserInfo().userId, // 鉴权后用户信息(企业微信返回的code)
+        user: loadUserInfo().userId, // 鉴权后用户信息
         ...transformParams({ ...state })
       }).then(res => {
         if (res && res.code === 200) {
@@ -170,11 +170,17 @@ export default defineComponent({
     const onSubmit = () => {
       submitWorkCard({
         type: 2,
-        user: loadUserInfo().userId, // 鉴权后用户信息(企业微信返回的code)
+        user: loadUserInfo().userId, // 鉴权后用户信息
         ...transformParams({ ...state })
       }).then(res => {
         if (res && res.code === 200) {
           showSuccessToast(res.message)
+          route.push({
+            path: '/success',
+            query: {
+              //
+            }
+          })
         }
         console.log(res)
       })
