@@ -1,5 +1,5 @@
 <script>
-import { defineComponent, reactive, ref, h, resolveComponent, computed, toRefs } from 'vue'
+import { defineComponent, reactive, ref, h, resolveComponent, computed, toRefs, onMounted } from 'vue'
 import { Tabs, Tab, Search, Popup, Checkbox, Tag } from 'vant'
 import { useSearchField } from '@/use/useSearchField'
 import { showDialog } from '@/components/base/base-dialog/index'
@@ -73,6 +73,10 @@ export default defineComponent({
       refreshContext.refreshing = false
       return true
     }
+
+    onMounted(() => {
+      //
+    })
     return {
       active,
       tabData,

@@ -31,6 +31,23 @@ export function getWxAuthorize () {
 // }
 
 /**
+ * 获取企业微信权限签名
+ * @params
+ * @returns {}
+ */
+export function getWxTicketData (url) {
+  return request({
+    url: `/enrc/getTicketData?url=${url}`,
+    method: 'get',
+    headers: {
+      OperationCode: 'staeco.enrc.testLocalhost.getTicket'
+    }
+  })
+}
+
+// /enrc/getTicketData
+
+/**
  * 通过企业微信code获取用户信息
  * @params
  * @returns {}

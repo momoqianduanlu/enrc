@@ -146,7 +146,28 @@ export default defineComponent({
       state.originalJobNo = ''
     }
     const onPush = () => {
-      showPushDialog.value = true
+      // showPushDialog.value = true
+
+      // eslint-disable-next-line no-undef
+      wx.ready(function () {
+        // eslint-disable-next-line no-undef
+        wx.invoke('selectEnterpriseContact', {
+          fromDepartmentId: 0, // 必填，表示打开的通讯录从指定的部门开始展示，-1表示自己所在部门开始, 0表示从最上层开始
+          mode: 'multi', // 必填，选择模式，single表示单选，multi表示多选
+          type: ['user'], // 必填，选择限制类型，指定department、user中的一个或者多个
+          selectedDepartmentIds: [], // 非必填，已选部门ID列表。用于多次选人时可重入，single模式下请勿填入多个id
+          selectedUserIds: [] // 非必填，已选用户ID列表。用于多次选人时可重入，single模式下请勿填入多个id
+        }, function (res) {
+          if (res.err_msg === 'selectEnterpriseContact:ok') {
+            if (typeof res.result === 'string') {
+              res.result = JSON.parse(res.result)
+              console.log(res.result)
+            }
+            // const selectedUserList = res.result.userList // 已选的成员列表
+          }
+        }
+        )
+      })
     }
     const onRouterTo = () => {
       route.push({
@@ -418,7 +439,7 @@ export default defineComponent({
     }
     return (
       <Form onSubmit={onSubmit}>
-        { this.visibleQrCode
+        {this.visibleQrCode
           ? <QrCode onGetQrCode={
             (code) => {
               onGetQrCodeHandle(code)
@@ -428,7 +449,7 @@ export default defineComponent({
         }
         <Field label='Orig.JobNo or ProjectID' v-model={this.originalJobNo} placeholder='请点击扫描条形码'>
           {{
-            'right-icon': () => <Icon name="scan" size="30" onClick={showQrCode}/>,
+            'right-icon': () => <Icon name="scan" size="30" onClick={showQrCode} />,
             button: () => <Button size="small" type="primary" onClick={onClear}>清除</Button>
           }}
         </Field>
