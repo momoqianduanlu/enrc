@@ -147,7 +147,8 @@ export default defineComponent({
     }
     const onPush = () => {
       // showPushDialog.value = true
-
+      // eslint-disable-next-line no-undef
+      console.log(111, wx)
       // eslint-disable-next-line no-undef
       wx.ready(function () {
         // eslint-disable-next-line no-undef

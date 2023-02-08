@@ -49,7 +49,7 @@ const initWxConfig = () => {
 if (isWeChat(navigator.userAgent)) {
   if (searchObject.code) {
     getUserInfo(searchObject.code).then(res => {
-      console.log('---', res)
+      console.log('res', res)
       if (res) {
         initApp()
         initWxConfig()
