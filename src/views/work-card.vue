@@ -142,6 +142,43 @@ export default defineComponent({
         return false
       }
     }
+    const onClear = () => {
+      state.originalJobNo = ''
+    }
+    const onPush = () => {
+      showPushDialog.value = true
+    }
+    const onRouterTo = () => {
+      route.push({
+        path: '/nrc-view'
+      })
+    }
+    // 草稿提交
+    const onDraft = () => {
+      submitWorkCard({
+        type: 1,
+        user: loadUserInfo(), // 鉴权后用户信息(企业微信返回的code)
+        ...transformParams({ ...state })
+      }).then(res => {
+        if (res && res.code === 200) {
+          showSuccessToast(res.message)
+        }
+        console.log(res)
+      })
+    }
+    // 保存提交
+    const onSubmit = () => {
+      submitWorkCard({
+        type: 2,
+        user: loadUserInfo(), // 鉴权后用户信息(企业微信返回的code)
+        ...transformParams({ ...state })
+      }).then(res => {
+        if (res && res.code === 200) {
+          showSuccessToast(res.message)
+        }
+        console.log(res)
+      })
+    }
     const compressImage = (file) => {
       return new Promise((resolve, reject) => {
         // eslint-disable-next-line no-new
@@ -160,45 +197,8 @@ export default defineComponent({
         })
       })
     }
-    const onClear = () => {
-      state.originalJobNo = ''
-    }
-    const onPush = () => {
-      showPushDialog.value = true
-    }
-    const onRouterTo = () => {
-      route.push({
-        path: '/nrc-view'
-      })
-    }
-    const onDraft = () => {
-      // 草稿提交
-      submitWorkCard({
-        type: 1,
-        user: loadUserInfo(), // 鉴权后用户信息(企业微信返回的code)
-        ..._transformParams({ ...state })
-      }).then(res => {
-        if (res && res.code === 200) {
-          showSuccessToast(res.message)
-        }
-        console.log(res)
-      })
-    }
-    const onSubmit = () => {
-      // 保存提交
-      submitWorkCard({
-        type: 2,
-        user: loadUserInfo(), // 鉴权后用户信息(企业微信返回的code)
-        ..._transformParams({ ...state })
-      }).then(res => {
-        if (res && res.code === 200) {
-          showSuccessToast(res.message)
-        }
-        console.log(res)
-      })
-    }
     // 序列化参数
-    const _transformParams = (params) => {
+    const transformParams = (params) => {
       let _params = {}
       const decludeKey = ['part', 'sta', 'waterLine', 'stringer', 'bbl']
       Object.keys(params).forEach(key => {
