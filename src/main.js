@@ -2,9 +2,10 @@ import { createApp } from 'vue'
 import { showFailToast } from 'vant'
 import App from './App.vue'
 import router from './router'
-import { register } from '@/utils/register'
+import { register } from './utils/register'
 import { urlParse, isWeChat } from './utils'
-import { getWxAuthorize, getToken } from '@/api/base'
+import { saveUserInfo } from './utils/cache'
+import { getWxAuthorize, getUserInfo } from '@/api/base'
 
 // 引入全局样式
 import '@/assets/scss/index.scss'
@@ -27,11 +28,14 @@ const initApp = () => {
 }
 
 if (isWeChat(navigator.userAgent)) {
-  console.log('searchObject', searchObject)
   if (searchObject.code) {
-    getToken().then(res => {
+    getUserInfo(searchObject.code).then(res => {
       console.log('---', res)
       initApp()
+      saveUserInfo({
+        ...res,
+        code: searchObject.code
+      })
       router.push({
         path: '/'
       })

@@ -9,6 +9,7 @@ import TopTitle from '@/components/base/top-title'
 import SelectTag from '@/components/select-tag'
 import QrCode from '@/components/qr-code'
 import { debounce, isObject } from '@/utils'
+import { loadUserInfo } from '@/utils/cache'
 import { getJobInfoById, getSelectList, getSelectComponentList, submitWorkCard } from '@/api/workCard'
 
 export default defineComponent({
@@ -215,7 +216,7 @@ export default defineComponent({
       // 保存提交
       submitWorkCard({
         type: 2,
-        user: '12345', // 鉴权后用户信息
+        user: loadUserInfo(), // 鉴权后用户信息(企业微信返回的code)
         ...transformParams({ ...state })
       }).then(res => {
         if (res && res.code === 200) {

@@ -20,27 +20,27 @@ export function getWxAuthorize () {
  * @params
  * @returns token
  */
-export function getToken () {
-  return request({
-    url: '/enrc/getToken',
-    method: 'get',
-    headers: {
-      OperationCode: 'staeco.enrc.testLocalhost.getEnrcToken'
-    }
-  })
-}
+// export function getToken () {
+//   return request({
+//     url: '/enrc/getToken',
+//     method: 'get',
+//     headers: {
+//       OperationCode: 'staeco.enrc.testLocalhost.getEnrcToken'
+//     }
+//   })
+// }
 
 /**
- * 获取用户信息
+ * 通过企业微信code获取用户信息
  * @params
  * @returns {}
  */
-export function getUserInfo (param) {
+export function getUserInfo (code) {
   return request({
-    url: `/enrc/getUsers?token=${param.token}`,
+    url: `/enrc/getUserInfo?code=${code}`,
     method: 'get',
     headers: {
-      OperationCode: 'staeco.enrc.testLocalhost.getWeComUsers'
+      OperationCode: 'staeco.enrc.testLocalhost.getUserId'
     }
   })
 }

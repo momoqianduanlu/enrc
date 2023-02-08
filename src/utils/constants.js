@@ -11,3 +11,5 @@ export const HEADER_VAL = {
   LOGINCODE: 'sysadmin',
   LOGINPASSWORD: '000000'
 }
+
+export const _USERINFO_ = '_userinfo_'
