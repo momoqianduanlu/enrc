@@ -4,12 +4,13 @@ import { Divider, Checkbox, Switch, Radio, RadioGroup, Uploader, Icon, showSucce
 import Compressor from 'compressorjs'
 import { useRouter } from 'vue-router'
 import PopupPicker from '@/components/popup-picker'
-import PushDialog from '@/components/push-dialog'
+// import PushDialog from '@/components/push-dialog'
 import TopTitle from '@/components/base/top-title'
 import SelectTag from '@/components/select-tag'
 import QrCode from '@/components/qr-code'
 import { debounce, isObject } from '@/utils'
 import { loadUserInfo } from '@/utils/cache'
+import { getWxTicketData } from '@/api/base'
 import { getJobInfoById, getSelectList, getSelectComponentList, submitWorkCard } from '@/api/workCard'
 
 export default defineComponent({
@@ -84,13 +85,13 @@ export default defineComponent({
       { text: '700', value: '700' },
       { text: '800', value: '800' }
     ]
-    const pushData = [
-      { text: '全部商品', value: 0 },
-      { text: '新款商品', value: 1 },
-      { text: '活动商品', value: 2 }
-    ]
+    // const pushData = [
+    //   { text: '全部商品', value: 0 },
+    //   { text: '新款商品', value: 1 },
+    //   { text: '活动商品', value: 2 }
+    // ]
     const visibleQrCode = ref(false)
-    const showPushDialog = ref(false)
+    // const showPushDialog = ref(false)
     const visibleAreaPicker = ref(false)
     const visibleZonePicker = ref(false)
     const visibleStagePicker = ref(false)
@@ -146,28 +147,42 @@ export default defineComponent({
       state.originalJobNo = ''
     }
     const onPush = () => {
-      // showPushDialog.value = true
-      // eslint-disable-next-line no-undef
-      console.log(111, wx)
-      // eslint-disable-next-line no-undef
-      wx.ready(function () {
-        // eslint-disable-next-line no-undef
-        wx.invoke('selectEnterpriseContact', {
-          fromDepartmentId: 0, // 必填，表示打开的通讯录从指定的部门开始展示，-1表示自己所在部门开始, 0表示从最上层开始
-          mode: 'multi', // 必填，选择模式，single表示单选，multi表示多选
-          type: ['user'], // 必填，选择限制类型，指定department、user中的一个或者多个
-          selectedDepartmentIds: [], // 非必填，已选部门ID列表。用于多次选人时可重入，single模式下请勿填入多个id
-          selectedUserIds: [] // 非必填，已选用户ID列表。用于多次选人时可重入，single模式下请勿填入多个id
-        }, function (res) {
-          if (res.err_msg === 'selectEnterpriseContact:ok') {
-            if (typeof res.result === 'string') {
-              res.result = JSON.parse(res.result)
-              console.log(res.result)
+      getWxTicketData(window.location.href).then(res => {
+        if (res) {
+          const { appId, timestamp, noncestr, signature } = res
+          // https://developer.work.weixin.qq.com/document/path/90547
+          // eslint-disable-next-line no-undef
+          wx.config({
+            beta: true, // 必须这么写，否则wx.invoke调用形式的jsapi会有问题
+            debug: false,
+            appId, // 必填，企业微信的corpID
+            timestamp, // 必填，生成签名的时间戳
+            signature, // 必填，签名，见附录1
+            nonceStr: noncestr, // 必填，生成签名的随机串
+            jsApiList: ['selectEnterpriseContact'] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
+          })
+          // https://developer.work.weixin.qq.com/document/path/91821
+          // eslint-disable-next-line no-undef
+          wx.ready(function () {
+            // eslint-disable-next-line no-undef
+            wx.invoke('selectEnterpriseContact', {
+              fromDepartmentId: 0,
+              mode: 'multi',
+              type: ['user'],
+              selectedDepartmentIds: [],
+              selectedUserIds: []
+            }, function (res) {
+              if (res.err_msg === 'selectEnterpriseContact:ok') {
+                if (typeof res.result === 'string') {
+                  res.result = JSON.parse(res.result)
+                  console.log(res.result)
+                }
+                // const selectedUserList = res.result.userList // 已选的成员列表
+              }
             }
-            // const selectedUserList = res.result.userList // 已选的成员列表
-          }
+            )
+          })
         }
-        )
       })
     }
     const onRouterTo = () => {
@@ -303,9 +318,9 @@ export default defineComponent({
     })
     return {
       zoneList,
-      pushData,
+      // pushData,
       visibleQrCode,
-      showPushDialog,
+      // showPushDialog,
       visibleAreaPicker,
       visibleZonePicker,
       visibleStagePicker,
@@ -578,7 +593,7 @@ export default defineComponent({
               button: () => <Button type="primary" size='small' onClick={onPush}>推送</Button>
             }}
           </Field>
-          <PushDialog v-model:modelValue={this.showPushDialog} v-model:pushInfo={this.parentNo} pushData={this.pushData}></PushDialog>
+          {/* <PushDialog v-model:modelValue={this.showPushDialog} v-model:pushInfo={this.parentNo} pushData={this.pushData}></PushDialog> */}
         </div>
         <Divider style='borderColor: #1989fa' />
         <div style="margin: 16px;">
