@@ -154,7 +154,7 @@ export default defineComponent({
           // eslint-disable-next-line no-undef
           wx.config({
             beta: true, // 必须这么写，否则wx.invoke调用形式的jsapi会有问题
-            debug: false,
+            debug: true,
             appId, // 必填，企业微信的corpID
             timestamp, // 必填，生成签名的时间戳
             signature, // 必填，签名，见附录1
@@ -172,6 +172,7 @@ export default defineComponent({
               selectedDepartmentIds: [],
               selectedUserIds: []
             }, function (res) {
+              console.log('////////', res)
               if (res.err_msg === 'selectEnterpriseContact:ok') {
                 if (typeof res.result === 'string') {
                   res.result = JSON.parse(res.result)
