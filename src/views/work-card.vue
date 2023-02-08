@@ -172,58 +172,67 @@ export default defineComponent({
       })
     }
     const onDraft = () => {
-      // ...
-    }
-    const onSubmit = () => {
-      // 序列化参数
-      const transformParams = (params) => {
-        let _params = {}
-        const decludeKey = ['part', 'sta', 'waterLine', 'stringer', 'bbl']
-        Object.keys(params).forEach(key => {
-          let val = params[key]
-          // 文件数组
-          if (key === 'files' && Array.isArray(val) && val.length) {
-            val = val.map(item => {
-              return {
-                file: item.content
-              }
-            })
-          }
-          if (params.pseDefect) {
-            // 嵌套对象
-            if (decludeKey.includes(key) && isObject(val)) {
-              const _val = { ...val }
-              for (const k in _val) {
-                _params[k] = _val[k]
-              }
-              delete params[key]
-            }
-            _params = Object.assign(_params, {
-              [key]: val
-            })
-          } else {
-            // 普通对象
-            if (!decludeKey.includes(key)) {
-              _params = Object.assign(_params, {
-                [key]: val
-              })
-            }
-          }
-        })
-        return _params
-      }
-      console.log(transformParams({ ...state }))
-      // 保存提交
+      // 草稿提交
       submitWorkCard({
-        type: 2,
+        type: 1,
         user: loadUserInfo(), // 鉴权后用户信息(企业微信返回的code)
-        ...transformParams({ ...state })
+        ..._transformParams({ ...state })
       }).then(res => {
         if (res && res.code === 200) {
           showSuccessToast(res.message)
         }
         console.log(res)
       })
+    }
+    const onSubmit = () => {
+      // 保存提交
+      submitWorkCard({
+        type: 2,
+        user: loadUserInfo(), // 鉴权后用户信息(企业微信返回的code)
+        ..._transformParams({ ...state })
+      }).then(res => {
+        if (res && res.code === 200) {
+          showSuccessToast(res.message)
+        }
+        console.log(res)
+      })
+    }
+    // 序列化参数
+    const _transformParams = (params) => {
+      let _params = {}
+      const decludeKey = ['part', 'sta', 'waterLine', 'stringer', 'bbl']
+      Object.keys(params).forEach(key => {
+        let val = params[key]
+        // 文件数组
+        if (key === 'files' && Array.isArray(val) && val.length) {
+          val = val.map(item => {
+            return {
+              file: item.content
+            }
+          })
+        }
+        if (params.pseDefect) {
+          // 嵌套对象
+          if (decludeKey.includes(key) && isObject(val)) {
+            const _val = { ...val }
+            for (const k in _val) {
+              _params[k] = _val[k]
+            }
+            delete params[key]
+          }
+          _params = Object.assign(_params, {
+            [key]: val
+          })
+        } else {
+          // 普通对象
+          if (!decludeKey.includes(key)) {
+            _params = Object.assign(_params, {
+              [key]: val
+            })
+          }
+        }
+      })
+      return _params
     }
     onMounted(() => {
       const processSelectData = (list, key) => {
