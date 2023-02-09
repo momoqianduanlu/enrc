@@ -1,16 +1,33 @@
 import request from '@/utils/request.js'
 
 /**
+ * nrc历史数据查询
+ * @params
+ * @returns []
+ */
+export function getHistoryData (data) {
+  return request({
+    url: '/enrc/queryNrcHisDataInterface',
+    method: 'post',
+    headers: {
+      OperationCode: 'staeco.enrc.testLocalhost.queryNrcHistoricalDatas'
+    },
+    data
+  })
+}
+
+/**
  * nrc标准模板查询
  * @params
- * @returns url
+ * @returns []
  */
-export function getWxAuthorize () {
+export function getNormalTemplateData (data) {
   return request({
-    url: '/enrc/getTokenUrl',
-    method: 'get',
+    url: '/enrc/queryNrcDatabaseTempData',
+    method: 'post',
     headers: {
-      OperationCode: 'staeco.enrc.testLocalhost.getEnrcTokenUrl'
-    }
+      OperationCode: 'staeco.enrc.testLocalhost.queryEnrcNrcDatabaseTemplateData'
+    },
+    data
   })
 }

@@ -1,30 +1,36 @@
 <script>
-import { defineComponent, reactive, ref, h, resolveComponent, computed, toRefs, onMounted } from 'vue'
+import { defineComponent, reactive, ref, h, resolveComponent, computed, toRefs } from 'vue'
 import { Tabs, Tab, Search, Popup, Checkbox, Tag } from 'vant'
 import { useSearchField } from '@/use/useSearchField'
+import { getHistoryData, getNormalTemplateData } from '@/api/nrcView'
 import { showDialog } from '@/components/base/base-dialog/index'
 import ContentList from '@/components/content-list'
 
 export default defineComponent({
   name: 'nrc-view',
   setup () {
-    const active = ref(0)
+    const active = ref(1)
     const tabData = ref([
       {
         name: 'NRC历史数据',
         index: 0,
-        componentName: 'renderHistory'
+        componentName: 'renderHistory',
+        dataList: []
       },
       {
         name: 'NRC标准数据库',
         index: 1,
-        componentName: 'renderNormal'
+        componentName: 'renderNormal',
+        dataList: []
       }
     ])
+    const pageObj = reactive({
+      pageIndex: 1,
+      pageLength: 10
+    })
+    const lastPage = ref(0)
     const searchQuery = ref('')
     const visible = ref(false)
-    const checked = ref(false)
-    const list = ref([1, 2, 3, 4, 5, 6])
     const searchContext = reactive(useSearchField())
     const refreshContext = reactive({
       refreshing: false,
@@ -46,25 +52,26 @@ export default defineComponent({
       })
     }
     const onRefreshHandle = () => {
-      //
+      // 是否已加载完成，加载完成后不再触发 load 事件
+      refreshContext.finished = false
+      // 重新加载数据 将 loading 设置为 true，表示处于加载状态
+      refreshContext.loading = true
     }
     const onLoadedHandle = () => {
-      // setTimeout 仅做示例，真实场景中一般为 ajax 请求
-      setTimeout(() => {
-        if (refreshContext.refreshing) {
-          list.value = []
-          refreshContext.refreshing = false
-        }
+      console.log(111)
 
-        for (let i = 0; i < 1; i++) {
-          list.value.push(list.value.length + 1)
-        }
-        refreshContext.loading = false
+      if (refreshContext.refreshing) {
+        refreshContext.refreshing = false
+      }
 
-        if (list.value.length >= 1) {
-          refreshContext.finished = true
-        }
-      }, 1000)
+      const params = Object.assign(pageObj, {
+        //
+      })
+      if (active.value) {
+        _getNormalTemplateData(params)
+      } else {
+        _getHistoryData(params)
+      }
     }
     // tab切换重置加载状态
     const onBeforeChange = (index) => {
@@ -73,20 +80,66 @@ export default defineComponent({
       refreshContext.refreshing = false
       return true
     }
+    const processDataListResponse = res => {
+      if (res && res.list && res.list.length) {
+        const { list, total } = res
+        const dataList = tabData.value[active.value].dataList
 
-    onMounted(() => {
-      //
-    })
+        lastPage.value = Math.ceil(total / pageObj.pageLength)
+        tabData.value[active.value].dataList = dataList.concat(list.map(item => {
+          return {
+            ...item,
+            checked: false
+          }
+        }))
+        // 加载状态结束
+        refreshContext.loading = false
+        // 当前页数自增
+        pageObj.pageIndex++
+
+        if (dataList.length >= total) {
+          // 数据全部加载完成
+          refreshContext.finished = true
+        } else {
+          // 可继续加载数据
+          refreshContext.finished = false
+        }
+      } else {
+        refreshContext.loading = false
+        refreshContext.finished = true
+      }
+    }
+    const _getNormalTemplateData = (params) => {
+      if (params.pageIndex === lastPage.value) {
+        refreshContext.loading = false
+        refreshContext.finished = true
+        return
+      }
+      getNormalTemplateData(params).then(res => {
+        console.log('///', res)
+        processDataListResponse(res)
+      })
+    }
+    const _getHistoryData = (params) => {
+      if (params.pageIndex === lastPage.value) {
+        refreshContext.loading = false
+        refreshContext.finished = true
+        return
+      }
+      getHistoryData(params).then(res => {
+        console.log(res)
+        processDataListResponse(res)
+      })
+    }
+
     return {
       active,
       tabData,
       visible,
-      checked,
       searchQuery,
       searchContext,
       ...toRefs(refreshContext),
       currentTab,
-      list,
       onFocus,
       onClickButton,
       onTagHnadle,
@@ -97,26 +150,26 @@ export default defineComponent({
   },
   render () {
     const { onFocus, onClickButton, onTagHnadle, onRefreshHandle, onLoadedHandle, onBeforeChange } = this
-    const renderHistory = () => {
+    const renderHistory = (list) => {
       return <div class="render-view">
         {
-          this.list.length && this.list.map(item => {
+          list.length && list.map(item => {
             return <div class="overview">
               <div class="checked">
-                <Checkbox v-model={this.checked} />
+                <Checkbox v-model={item.checked} />
               </div>
               <div class="wrapper">
                 <div class="title">
-                  <i>No：</i>
-                  <span>Action：</span>
+                  <i>No：{item.ataNo}</i>
+                  <span>Action：{item.action}</span>
                 </div>
                 <div class="extra">
-                  <span>Mhr：<Tag plain type="primary">1</Tag></span>
-                  <span>Trade：<Tag plain type="primary">AE</Tag></span>
+                  <span>Mhr：<Tag plain type="primary">{item.manHour}</Tag></span>
+                  <span>Trade：<Tag plain type="primary">{item.trade}</Tag></span>
                   <span>Sws：<Tag type="primary">有</Tag></span>
                 </div>
                 <div class="desc">
-                  <p>支持NRC附属补充工作单勾选后，在NRC提交后自动跳转至补充工单生成页面，并将各个步骤全部复制至相应位置；</p>
+                  <p>{item.description}</p>
                 </div>
               </div>
             </div>
@@ -124,26 +177,26 @@ export default defineComponent({
         }
       </div>
     }
-    const renderNormal = () => {
+    const renderNormal = (list) => {
       return <div class="render-view">
         {
-          this.list.length && this.list.map(item => {
+          list.length && list.map(item => {
             return <div class="overview">
               <div class="checked">
-                <Checkbox v-model={this.checked} />
+                <Checkbox v-model={item.checked} />
               </div>
               <div class="wrapper">
                 <div class="title">
-                  <i>No：</i>
-                  <span>Action：</span>
+                  <i>No：{item.ataNo}</i>
+                  <span>Action：{item.action}</span>
                 </div>
                 <div class="extra">
-                  <span>Mhr：<Tag plain type="primary">1</Tag></span>
-                  <span>Trade：<Tag plain type="primary">AE</Tag></span>
+                  <span>Mhr：<Tag plain type="primary">{item.manHour}</Tag></span>
+                  <span>Trade：<Tag plain type="primary">{item.trade}</Tag></span>
                   <span>Sws：<Tag type="primary" onClick={onTagHnadle}>有</Tag></span>
                 </div>
                 <div class="desc">
-                  <p>支持NRC附属补充工作单勾选后，在NRC提交后自动跳转至补充工单生成页面，并将各个步骤全部复制至相应位置；</p>
+                  <p>{item.description}</p>
                 </div>
               </div>
             </div>
@@ -210,7 +263,7 @@ export default defineComponent({
                   onLoaded={onLoadedHandle}
                 >
                   {
-                    tab.index === 0 ? renderHistory() : renderNormal()
+                    tab.index === 0 ? renderHistory(tab.dataList) : renderNormal(tab.dataList)
                   }
                 </ContentList>
               </Tab>
@@ -279,7 +332,7 @@ export default defineComponent({
           text-overflow: ellipsis;
           display: -webkit-box; //作为弹性伸缩盒子模型显示。
           -webkit-box-orient: vertical; //设置伸缩盒子的子元素排列方式--从上到下垂直排列
-          -webkit-line-clamp: 3; //显示的行
+          -webkit-line-clamp: 2; //显示的行
         }
       }
     }

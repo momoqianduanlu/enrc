@@ -90,6 +90,19 @@ export default defineComponent({
     //   { text: '新款商品', value: 1 },
     //   { text: '活动商品', value: 2 }
     // ]
+    const selectedUserList = ref([{
+      id: '516081',
+      name: '陈龙祥',
+      avatar: 'http://wework.qpic.cn/wwhead/duc2TvpEgSQO4BpE0WZSZwTDZS74krtWXokjLj3AwPs5DeRfyTR91tLdiaFClibT6icbkhlc0libt0Y/0'
+    }, {
+      id: '551540',
+      name: '邓子希',
+      avatar: 'https://wework.qpic.cn/wwpic/176946_FkkrNJgOTmutJJV_1674970677/0'
+    }, {
+      id: '511833',
+      name: '杜中法',
+      avatar: 'https://wework.qpic.cn/wwpic/858639_grW55kt7REu_jPh_1662678810/0'
+    }])
     const visibleQrCode = ref(false)
     // const showPushDialog = ref(false)
     const visibleAreaPicker = ref(false)
@@ -172,13 +185,12 @@ export default defineComponent({
               selectedDepartmentIds: [],
               selectedUserIds: []
             }, function (res) {
-              console.log('////////', res)
               if (res.err_msg === 'selectEnterpriseContact:ok') {
                 if (typeof res.result === 'string') {
                   res.result = JSON.parse(res.result)
                   console.log(res.result)
                 }
-                // const selectedUserList = res.result.userList // 已选的成员列表
+                selectedUserList.value = res.result.userList // 已选的成员列表
               }
             }
             )
