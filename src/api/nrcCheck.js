@@ -30,3 +30,18 @@ export function getNrcCheckImgData (id) {
     }
   })
 }
+
+/**
+ * 删除 非例行工卡数据
+ * @params 'id'
+ * @returns []
+ */
+// export function getNrcCheckImgData (params) {
+//   return request({
+//     url: `/enrc/deleteNonroutineJobCard`,
+//     method: 'post',
+//     headers: {
+//       OperationCode: 'staeco.enrc.testLocalhost.getFiles'
+//     }
+//   })
+// }
