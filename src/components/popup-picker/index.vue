@@ -1,6 +1,6 @@
 <script>
 import { computed, defineComponent, toRefs } from 'vue'
-import { Popup, Picker } from 'vant'
+import { Picker } from 'vant'
 
 export default defineComponent({
   name: 'popup-picker',

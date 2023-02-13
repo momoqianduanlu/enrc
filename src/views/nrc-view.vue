@@ -1,6 +1,6 @@
 <script>
 import { defineComponent, reactive, ref, h, resolveComponent, computed, toRefs } from 'vue'
-import { Tabs, Tab, Search, Popup, Checkbox, Tag } from 'vant'
+import { Tabs, Tab, Search, Checkbox, Tag } from 'vant'
 import { useSearchField } from '@/use/useSearchField'
 import { getHistoryData, getNormalTemplateData } from '@/api/nrcView'
 import { showDialog } from '@/components/base/base-dialog/index'
@@ -26,7 +26,7 @@ export default defineComponent({
     ])
     const pageObj = reactive({
       pageIndex: 1,
-      pageLength: 10
+      pageSize: 10
     })
     const lastPage = ref(0)
     const searchQuery = ref('')
@@ -82,10 +82,11 @@ export default defineComponent({
     }
     const processDataListResponse = res => {
       if (res && res.list && res.list.length) {
-        const { list, total } = res
+        // eslint-disable-next-line prefer-const
+        let { list, total } = res
         const dataList = tabData.value[active.value].dataList
-
-        lastPage.value = Math.ceil(total / pageObj.pageLength)
+        list = typeof list === 'string' ? JSON.parse(list) : list
+        lastPage.value = Math.ceil(total / pageObj.pageSize)
         tabData.value[active.value].dataList = dataList.concat(list.map(item => {
           return {
             ...item,
@@ -310,11 +311,15 @@ export default defineComponent({
         margin-bottom: 5px;
         color: $color-text;
         i {
+          flex: 0 0 120px;
           font-size: $font-size-medium-x;
           font-style: normal;
+          overflow: hidden;
         }
         span {
+          flex: 1;
           font-size: $font-size-medium;
+          overflow: hidden;
         }
       }
       .extra {

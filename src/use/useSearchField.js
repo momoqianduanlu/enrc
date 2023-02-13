@@ -76,3 +76,25 @@ export const useSearchField = () => {
     ]
   }
 }
+
+export const useFilterField = () => {
+  return [
+    {
+      model: 'Field',
+      props: {
+        label: 'Project Id',
+        placeholder: '请输入project id',
+        modelValue: ''
+      }
+    },
+    {
+      model: 'Field',
+      props: {
+        label: 'AcRegNo',
+        placeholder: '请输入AcRegNo',
+        modelValue: '',
+        disabled: true
+      }
+    }
+  ]
+}
