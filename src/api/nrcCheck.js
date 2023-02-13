@@ -15,3 +15,18 @@ export function getNrcCheckData (data) {
     data
   })
 }
+
+/**
+ * 查询nrc非例行工卡的图片数据
+ * @params 'id'
+ * @returns []
+ */
+export function getNrcCheckImgData (id) {
+  return request({
+    url: `/enrc/queryPictures?id=${id}`,
+    method: 'get',
+    headers: {
+      OperationCode: 'staeco.enrc.testLocalhost.getFiles'
+    }
+  })
+}

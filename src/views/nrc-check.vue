@@ -1,9 +1,10 @@
 <script>
 import { defineComponent, ref, h, resolveComponent, onMounted } from 'vue'
-import { Tabbar, TabbarItem, Search, SwipeCell, Tag } from 'vant'
+import { Tabbar, TabbarItem, Search, SwipeCell, Tag, showImagePreview } from 'vant'
 import { useFilterField } from '@/use/useSearchField'
-import { getNrcCheckData } from '@/api/nrcCheck'
+import { getNrcCheckData, getNrcCheckImgData } from '@/api/nrcCheck'
 import usePage from '@/use/usePage'
+import { FLOW_STATUS } from '@/utils/constants'
 
 export default defineComponent({
   name: 'nrc-check',
@@ -23,6 +24,7 @@ export default defineComponent({
         url: '/nrc-view'
       }
     ]
+    const nrcList = ref([])
     const visible = ref(false)
     const {
       // pageObj,
@@ -37,104 +39,227 @@ export default defineComponent({
     const onClickButton = () => {
       visible.value = false
     }
+    const onClickHandle = (item, handle) => {
+      if (handle === 'edit' || handle === 'copy') {
+        //
+      } else if (handle === 'delete') {
+        //
+      } else if (handle === 'preview') {
+        console.log(item)
+        getNrcCheckImgData(item.id).then(res => {
+          if (res) {
+            showImagePreview(['https://fastly.jsdelivr.net/npm/@vant/assets/apple-1.jpeg', ...res])
+          }
+        })
+      }
+    }
+    const processNrcList = (list) => {
+      return list.map((item) => {
+        const { fileNo, status } = item
+        let buttonList = []
+        const map = new Map([
+          [
+            '00',
+            [
+              {
+                type: 'default',
+                handle: 'all',
+                name: '全部'
+              }
+            ]
+          ],
+          [
+            '01',
+            [
+              {
+                type: 'primary',
+                handle: 'edit',
+                name: '编辑'
+              },
+              {
+                type: 'warning',
+                handle: 'copy',
+                name: '拷贝'
+              }
+            ]
+          ],
+          [
+            '02',
+            [
+              {
+                type: 'primary',
+                handle: 'edit',
+                name: '编辑'
+              },
+              {
+                type: 'danger',
+                handle: 'delete',
+                name: '删除'
+              }
+            ]
+          ],
+          [
+            '03',
+            [
+              {
+                type: 'warning',
+                handle: 'copy',
+                name: '拷贝'
+              }
+            ]
+          ]
+        ])
+        const mapItem = map.get(status)
+        if (mapItem) {
+          buttonList = buttonList.concat(mapItem)
+        }
+        // 有照片添加照片预览
+        if (fileNo !== '0') {
+          buttonList.push({
+            type: 'default',
+            handle: 'preview',
+            name: '照片'
+          })
+        }
+        return {
+          ...item,
+          buttonList,
+          _status: FLOW_STATUS[status]
+        }
+      })
+    }
     onMounted(() => {
-      getNrcCheckData().then(res => {
+      getNrcCheckData().then((res) => {
         console.log(res)
+        if (res) {
+          nrcList.value = processNrcList(res.list)
+        }
       })
     })
     return {
       active,
       tabList,
+      nrcList,
       visible,
       searchQuery,
       searchContext,
       onFocus,
-      onClickButton
+      onClickButton,
+      onClickHandle
     }
   },
   render () {
-    const { onFocus, onClickButton } = this
+    const { onFocus, onClickButton, onClickHandle } = this
     const renderFilter = () => {
-      return <Form>
-        <div class="serach-form-center">
-          {this.searchContext
-            ? this.searchContext.map(schame => {
-              return renderFilterComponent(schame)
-            })
-            : null}
-        </div>
-        <div class="serach-form-bottom">
-          <Button
-            type="primary"
-          >
-            查询
-          </Button>
-        </div>
-      </Form>
+      return (
+        <Form>
+          <div class="serach-form-center">
+            {this.searchContext
+              ? this.searchContext.map((schame) => {
+                return renderFilterComponent(schame)
+              })
+              : null}
+          </div>
+          <div class="serach-form-bottom">
+            <Button type="primary">查询</Button>
+          </div>
+        </Form>
+      )
     }
     const renderFilterComponent = (schema) => {
       return h(resolveComponent(`${schema.model}`), {
         ...schema.props,
-        'onUpdate:modelValue': val => {
+        'onUpdate:modelValue': (val) => {
           console.log('val', val)
           schema.props.modelValue = val
         }
       })
     }
-    const renderCellItem = () => {
-      return <div class="cell-item">
-        <div class="wrapper">
-          <div class="title">
-            <i>No：{1}</i>
-            <span>Action：{1}</span>
-          </div>
-          <div class="extra">
-            <span>Mhr：<Tag plain type="primary">{1}</Tag></span>
-          </div>
-          <div class="desc">
-            <p>{1}</p>
+    const renderSwipeCell = (item) => {
+      return (
+        <SwipeCell>
+          {{
+            default: () => {
+              return renderCellItem(item)
+            },
+            right: () => {
+              return renderCellButton(item)
+            }
+          }}
+        </SwipeCell>
+      )
+    }
+    const renderCellItem = (item) => {
+      return (
+        <div class="cell-view">
+          <div class="cell-item">
+            <div class="wrapper">
+              <div class="title">
+                <i>{item.createTime}</i>
+                <span>{item.originalJobNo}</span>
+              </div>
+              <div class="extra">
+                <span>创建人：{item.createBy}</span>
+                <span>
+                  状态：<Tag type="primary">{item._status}</Tag>
+                </span>
+              </div>
+              <div class="desc">
+                <p>{item.defectDescription}</p>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
+      )
     }
-    return <div class="nrc-check-container">
-      <Search
-        v-model={this.searchQuery}
-        show-action
-        placeholder="请输入搜索关键词"
-        onFocus={onFocus}
-      >
-        {{
-          action: () => <div onClick={onClickButton}>取消</div>
-        }}
-      </Search>
-      <SwipeCell>
-        {{
-          default: () => {
-            return <div class="cell-view">
-              {
-                renderCellItem()
-              }
-            </div>
-          },
-          right: () => {
-            return <div class="cell-button">
-              <Button square text="删除" type="danger" class="delete-button">111</Button>
-            </div>
-          }
-        }}
-      </SwipeCell>
-      <Popup v-model:show={this.visible} position="bottom" style="{ height: '45%' }">
-        {renderFilter()}
-      </Popup>
-      <Tabbar v-model={this.active}>
-        {
-          this.tabList.map(item => {
+    const renderCellButton = (item) => {
+      return (
+        <div class="cell-button">
+          {item.buttonList
+            ? item.buttonList.map((btn) => {
+              return (
+                  <Button square type={btn.type} class="delete-button" onClick={() => {
+                    onClickHandle(item, btn.handle)
+                  }}>
+                    {btn.name}
+                  </Button>
+              )
+            })
+            : null}
+        </div>
+      )
+    }
+    return (
+      <div class="nrc-check-container">
+        <Search
+          v-model={this.searchQuery}
+          show-action
+          placeholder="请输入搜索关键词"
+          onFocus={onFocus}
+        >
+          {{
+            action: () => <div onClick={onClickButton}>取消</div>
+          }}
+        </Search>
+        <div class="swipe-cell">
+          {this.nrcList.map((item) => {
+            return renderSwipeCell(item)
+          })}
+        </div>
+        <Popup
+          v-model:show={this.visible}
+          position="bottom"
+          style="{ height: '45%' }"
+        >
+          {renderFilter()}
+        </Popup>
+        <Tabbar v-model={this.active}>
+          {this.tabList.map((item) => {
             return <TabbarItem to={item.url}>{item.name}</TabbarItem>
-          })
-        }
-      </Tabbar>
-    </div>
+          })}
+        </Tabbar>
+      </div>
+    )
   }
 })
 </script>
@@ -160,14 +285,14 @@ export default defineComponent({
         color: $color-text;
 
         i {
-          flex: 0 0 120px;
-          font-size: $font-size-medium-x;
+          flex: 1;
+          font-size: $font-size-medium;
           font-style: normal;
           overflow: hidden;
         }
 
         span {
-          flex: 1;
+          flex: 0 0 120px;
           font-size: $font-size-medium;
           overflow: hidden;
         }
@@ -175,9 +300,12 @@ export default defineComponent({
 
       .extra {
         display: flex;
-        justify-content: space-between;
         font-size: $font-size-medium;
         margin-bottom: 5px;
+
+        span {
+          margin-right: 5px;
+        }
       }
 
       .desc {
